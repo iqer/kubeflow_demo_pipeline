@@ -1,0 +1,32 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: demo-2-
+  annotations:
+    {
+      pipelines.kubeflow.org/kfp_sdk_version: 1.8.5,
+      pipelines.kubeflow.org/pipeline_compilation_time: "2021-11-03T19:43:24.258878",
+      pipelines.kubeflow.org/pipeline_spec: '{"description": "test", "name": "demo"}',
+    }
+  labels: { pipelines.kubeflow.org/kfp_sdk_version: 1.8.5 }
+spec:
+  entrypoint: demo-2
+  templates:
+    - name: demo
+      container:
+        image: "shanau2/demo_pipeline:v0.0.2"
+        command:
+          - python
+          - demo.py
+      metadata:
+        labels:
+          pipelines.kubeflow.org/kfp_sdk_version: 1.8.5
+          pipelines.kubeflow.org/pipeline-sdk-type: kfp
+          pipelines.kubeflow.org/enable_caching: "true"
+    - name: demo-2
+      dag:
+        tasks:
+          - { name: demo, template: demo }
+  arguments:
+    parameters: []
+  serviceAccountName: pipeline-runner
